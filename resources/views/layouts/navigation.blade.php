@@ -40,13 +40,15 @@
                     </x-slot>
 
                     <x-slot name="content">
-                        @foreach (app\Models\User::get() as $user)
-                            @if ($user->id !== auth()->id())
-                                <x-dropdown-link :href="route('profile.show', $user->id)">
-                                    {{ $user->name }}
-                                </x-dropdown-link>
-                            @endif
-                        @endforeach
+                        <x-dropdown-link :href="route('friends.list')">
+                            {{ __('Friends') }}
+                        </x-dropdown-link>
+                        <x-dropdown-link :href="route('friends.requests.list')">
+                            {{ __('Friends Requests') }}
+                        </x-dropdown-link>
+                        <x-dropdown-link :href="route('profile.index')">
+                            {{ __('Others') }}
+                        </x-dropdown-link>
                     </x-slot>
                 </x-dropdown>
                 <x-dropdown align="right" width="48">

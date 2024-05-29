@@ -9,7 +9,6 @@ use Illuminate\Http\Request;
 use App\Http\Requests\PhotoRequest;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Redirect;
 use App\Http\Requests\ProfileUpdateRequest;
 
@@ -18,9 +17,10 @@ class ProfileController extends Controller
     /**
      * Display the user's profile form.
      */
-    public function index(Request $request)
+    public function index(Request $request):View
     {
-        //    
+        $users=User::with('profile')->get();
+        return view('all-users',['users'=>$users]);
     }
 
     public function show($id)
