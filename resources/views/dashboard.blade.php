@@ -76,19 +76,51 @@
                             {{ $user->name . '\'s Posts' }}
                         </h2>
                     @endif
+                    <form action="{{ route('post.create') }}" method="get">
+                        @csrf
+                        <x-primary-button>{{ __('Write New Post') }}</x-primary-button>
+                    </form>
                     <br>
-                    @isset($posts)
-                        @foreach ($posts as $post)
-                            <div>
-                                <label for="post"> {{ $post->created_at }}</label>
-                                <span>
-                                    <p>
-                                        {{ $post->body }}
-                                    </p>
-                                </span>
+
+                    @foreach ($user->posts as $post)
+                        <div class="py-12">
+                            <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
+                                <div class="p-4 sm:p-8 bg-white shadow sm:rounded-lg">
+                                    <div class="max-w-xl">
+                                        <label for="post">
+                                            <strong>
+                                                {{ __('creation date') }}
+                                            </strong>
+                                            {{ $post->created_at }}</label>
+                                        <br>
+                                        <label for="post">
+                                            <strong>
+                                                {{ __('author\'s name') }}
+                                            </strong>
+                                            {{ $user->name }}</label>
+                                        <img height="50" width="50" src="{{ $user->profile->photo }}"
+                                            alt="">
+                                        <br>
+                                        <span>
+                                            <br>
+                                            <strong>
+                                                {{ __('post content->') }}
+                                            </strong>
+
+                                            {{ $post->content }}
+
+                                        </span>
+                                        <form action="{{ route('post.destroy', $post) }}" method="POST"
+                                            style="display:inline;">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="btn btn-danger">Delete</button>
+                                        </form>
+                                    </div>
+                                </div>
                             </div>
-                        @endforeach
-                    @endisset
+                        </div>
+                    @endforeach
                 </div>
             </div>
         </div>

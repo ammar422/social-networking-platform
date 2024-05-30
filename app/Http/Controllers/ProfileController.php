@@ -25,7 +25,7 @@ class ProfileController extends Controller
 
     public function show($id)
     {
-        $userData = User::findOrFail($id);
+        $userData = User::with(['posts','profile'])->findOrFail($id);
         return view('dashboard', [
             'user' => $userData
         ]);
