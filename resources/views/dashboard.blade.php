@@ -110,11 +110,13 @@
                                             {{ $post->content }}
 
                                         </span>
+                                        <br>
                                         <form action="{{ route('post.destroy', $post) }}" method="POST"
                                             style="display:inline;">
                                             @csrf
                                             @method('DELETE')
-                                            <button type="submit" class="btn btn-danger">Delete</button>
+                                            <x-danger-button>{{ __("Delete") }}</x-danger-button>
+                                            <button type="submit" class="btn btn-danger"></button>
                                         </form>
                                     </div>
                                 </div>

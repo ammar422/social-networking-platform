@@ -2,9 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\PostRequest;
+use App\Models\Like;
 use App\Models\Post;
+use App\Models\Comment;
+use App\Http\Requests\LikeRequest;
+use App\Http\Requests\PostRequest;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
+use App\Http\Requests\CommentRequest;
 
 class PostController extends Controller
 {
@@ -78,5 +83,33 @@ class PostController extends Controller
         $post->delete();
 
         return redirect()->route('post.index')->with('success', 'Post deleted successfully.');
+    }
+
+    public function like(LikeRequest $request,Post $post)
+    {
+        $like = Like::where('user_id', Auth::id())->where('post_id', $post->id)->first();
+
+        if ($like) {
+            $like->delete();
+        } else {
+            Like::create([
+                'user_id' => Auth::id(),
+                'post_id' => $post->id,
+            ]);
+        }
+
+        return redirect()->back();
+    }
+
+
+    public function storeComment(CommentRequest $request, Post $post)
+    {
+        Comment::create([
+            'user_id' => Auth::id(),
+            'post_id' => $post->id,
+            'content' => $request->validated('content'),
+        ]);
+
+        return redirect()->back()->with('success', 'Comment added successfully.');
     }
 }

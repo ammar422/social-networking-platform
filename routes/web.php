@@ -29,6 +29,9 @@ Route::middleware('auth')->group(function () {
 
 
     route::resource('post', PostController::class);
+
+    Route::post('post/{post}/like', [PostController::class, 'like'])->name('post.like');
+    Route::post('post/{post}/comment', [PostController::class, 'storeComment'])->name('post.comment');
 });
 
 require __DIR__ . '/auth.php';
