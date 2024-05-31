@@ -1,6 +1,7 @@
 <?php
 
-use App\Http\Controllers\Api\Auth\ApiAuthenticationController;
+use App\Http\Controllers\Api\Auth\LoginController;
+use App\Http\Controllers\Api\Auth\registerController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -8,11 +9,9 @@ Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:api');
 
-route::post('login',[ApiAuthenticationController::class,'login']);
-route::post('register',[ApiAuthenticationController::class,'register']);
+route::post('login', [LoginController::class, 'login']);
+route::post('register', [registerController::class, 'register']);
 
 Route::middleware('auth:api')->group(function () {
-    // Route::get('user/profile', [ApiAuthenticationController::class, 'profile']);
-    Route::post('logout', [ApiAuthenticationController::class, 'logout']);
-    
+    Route::post('logout', [LoginController::class, 'logout']);
 });
