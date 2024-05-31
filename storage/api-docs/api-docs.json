@@ -7,6 +7,9 @@
     "paths": {
         "/api/login": {
             "post": {
+                "tags": [
+                    "auth"
+                ],
                 "summary": "Authenticate user and generate access token",
                 "operationId": "5f90fad45b3bec06f69a5d179ce78a5f",
                 "parameters": [
@@ -41,6 +44,9 @@
         },
         "/api/logout": {
             "post": {
+                "tags": [
+                    "auth"
+                ],
                 "summary": "Logs out the authenticated user by revoking the access token.",
                 "operationId": "30b14d0552474a26ab0603d4b9691900",
                 "responses": {
@@ -55,6 +61,9 @@
         },
         "/api/register": {
             "post": {
+                "tags": [
+                    "auth"
+                ],
                 "summary": "Register a new user",
                 "operationId": "544e67a388e9aefbdb66f17f8da214bb",
                 "parameters": [
@@ -92,6 +101,253 @@
                     },
                     "422": {
                         "description": "Validation errors"
+                    }
+                }
+            }
+        },
+        "api/user/profiles": {
+            "get": {
+                "tags": [
+                    "Profiles"
+                ],
+                "summary": "Get all profiles with user information",
+                "description": "Retrieves all profiles along with their associated user data.",
+                "operationId": "3f17fc6fca5cc48d1b75255eed89d308",
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "The data has been retrieved successfully"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "api/user/profiles/{id}": {
+            "get": {
+                "tags": [
+                    "Profiles"
+                ],
+                "summary": "Get a specific profile with user information",
+                "description": "Retrieves a single profile identified by its ID, along with the associated user data.",
+                "operationId": "5b82d15f5028b4ecd726ff79926aa15a",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "The ID of the profile to retrieve",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "The Specified profile has been retrieved successfully"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Profile not found"
+                    }
+                }
+            }
+        },
+        "/api/user/profiles/{id}": {
+            "delete": {
+                "tags": [
+                    "Profiles"
+                ],
+                "summary": "Delete a user profile",
+                "description": "Deletes the specified user profile by ID",
+                "operationId": "destroyUserProfile",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID of the user profile to delete",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "The specified profile has been deleted successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "The specified profile has been deleted successfully"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Profile not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Profile not found"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "patch": {
+                "tags": [
+                    "Profiles"
+                ],
+                "summary": "Update a profile",
+                "operationId": "711da6f081c49ab1b13325f1f5d9a1f4",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID of the profile to update",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "bio"
+                                ],
+                                "properties": {
+                                    "bio": {
+                                        "type": "string",
+                                        "example": "This is a sample bio"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Profile updated successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "The Specified profile has been updated successfully"
+                                        },
+                                        "profile": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "bio": {
+                                                    "type": "string",
+                                                    "example": "This is a sample bio"
+                                                },
+                                                "created_at": {
+                                                    "type": "string",
+                                                    "format": "date-time",
+                                                    "example": "2023-01-01T00:00:00Z"
+                                                },
+                                                "updated_at": {
+                                                    "type": "string",
+                                                    "format": "date-time",
+                                                    "example": "2023-01-01T00:00:00Z"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Profile not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Profile not found"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "The given data was invalid."
+                                        },
+                                        "errors": {
+                                            "properties": {
+                                                "bio": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "string",
+                                                        "example": "The bio field is required."
+                                                    }
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
                     }
                 }
             }

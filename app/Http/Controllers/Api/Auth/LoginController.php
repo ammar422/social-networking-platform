@@ -14,6 +14,7 @@ class LoginController extends Controller
      * @OA\Post(
      *     path="/api/login",
      *     summary="Authenticate user and generate access token",
+     *     tags={"auth"},
      *     @OA\Parameter(
      *         name="email",
      *         in="query",
@@ -52,6 +53,7 @@ class LoginController extends Controller
      * @OA\Post(
      *     path="/api/logout",
      *     summary="Logs out the authenticated user by revoking the access token.",
+     *     tags={"auth"},
      *     @OA\Response(response="200", description="logout successful"),
      *     @OA\Response(response="401", description="Invalid credentials")
      * )

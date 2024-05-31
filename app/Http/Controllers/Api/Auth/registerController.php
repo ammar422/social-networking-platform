@@ -14,6 +14,7 @@ class registerController extends Controller
      * @OA\Post(
      *     path="/api/register",
      *     summary="Register a new user",
+     *      tags={"auth"},
      *     @OA\Parameter(
      *         name="name",
      *         in="query",
