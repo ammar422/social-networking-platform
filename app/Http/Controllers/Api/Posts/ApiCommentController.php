@@ -2,26 +2,22 @@
 
 namespace App\Http\Controllers\Api\Posts;
 
-use App\Models\Post;
-use Illuminate\Http\Request;
-use App\Http\Requests\PostRequest;
 use App\Http\Controllers\Controller;
-use Illuminate\Contracts\Auth\Guard;
-use Illuminate\Support\Facades\Gate;
+use App\Models\Comment;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
-class ApiPostController extends Controller
+class ApiCommentController extends Controller
 {
     /**
      * Display a listing of the resource.
-     */
-    /**
-     * # Get all posts with user information
-
-     *@OA\Get(
-     *  path="api/user/posts",
-     * summary="Get all posts with user information",
-     * description="Retrieves all posts along with their associated user data.",
-     * tags={"posts"},
+     * 
+     * 
+     * *@OA\Get(
+     *  path="api/user/comments",
+     * summary="Get all comments with user information",
+     * description="Retrieves all comments along with their associated user data.",
+     * tags={"comments"},
      * @OA\Response(
      *   response=200,
      *  description="Successful operation",
@@ -39,8 +35,8 @@ class ApiPostController extends Controller
      */
     public function index()
     {
-        $posts = Post::where('user_id', auth()->guard('api')->id())->get();
-        return response()->json(['message' => 'success opreation', $posts]);
+        $comment = Comment::where('user_id', auth()->guard('api')->id())->get();
+        return response()->json(['message' => 'success opreation', $comment]);
     }
 
     /**
@@ -49,9 +45,9 @@ class ApiPostController extends Controller
      * 
      * 
      *   @OA\Post(
-     *     path="/api/user/posts",
-     *     summary="create a post",
-     *     tags={"posts"},
+     *     path="/api/user/comments",
+     *     summary="create a comment",
+     *     tags={"comments"},
      *     @OA\RequestBody(
      *         required=true,
      *         @OA\JsonContent(
@@ -61,11 +57,11 @@ class ApiPostController extends Controller
      *     ),
      *     @OA\Response(
      *         response=200,
-     *         description="post created successfully",
+     *         description="comment created successfully",
      *         @OA\JsonContent(
-     *             @OA\Property(property="message", type="string", example="The Specified post has been created successfully"),
+     *             @OA\Property(property="message", type="string", example="The Specified comment has been created successfully"),
      *             @OA\Property(
-     *                 property="post",
+     *                 property="comment",
      *                 type="object",
      *                 @OA\Property(property="id", type="integer", example=1),
      *                 @OA\Property(property="content", type="string", example="This is a sample content"),
@@ -76,9 +72,9 @@ class ApiPostController extends Controller
      *     ),
      *     @OA\Response(
      *         response=404,
-     *         description="post not found",
+     *         description="comment not found",
      *         @OA\JsonContent(
-     *             @OA\Property(property="message", type="string", example="post not found")
+     *             @OA\Property(property="message", type="string", example="comment not found")
      *         )
      *     ),
      *     @OA\Response(
@@ -99,26 +95,34 @@ class ApiPostController extends Controller
      *     )
      * )
      */
-    public function store(PostRequest $request)
+    public function store(Request $request)
     {
-        $post = Post::create([
-            'user_id' => auth()->guard('api')->id(),
-            'content' => $request->validated('content'),
+        $request->validate([
+            'post_id' => ['required', 'exists:posts,id'],
+            'content' => ['required', 'string']
         ]);
-        return response()->json(['message' => 'The Specified post has been created successfully', 'post' => $post]);
+        $comment = Comment::create([
+            'user_id' => auth()->guard('api')->id(),
+            'post_id' => $request->post_id,
+            'content' => $request->content,
+        ]);
+        if ($comment) {
+            return response()->json(['message' => 'The Specified comment has been created successfully', 'comment' => $comment]);
+        }
+        return response()->json(['message' => 'The comment has not created ', 500]);
     }
 
     /**
      * Display the specified resource.
      * * @OA\Get(
-     *   path="api/user/posts/{id}",
-     *   summary="Get a specific post with user information",
+     *   path="api/user/comments/{id}",
+     *   summary="Get a specific comment with user information",
      *   description="Retrieves a single post identified by its ID, along with the associated user data.",
-     *   tags={"posts"},
+     *   tags={"comments"},
      *    @OA\Parameter(
      *     name="id",
      *      in="path",
-     *      description="The ID of the post to retrieve",
+     *      description="The ID of the comment to retrieve",
      *      required=true,
      *      @OA\Schema(
      *        type="string"
@@ -132,55 +136,67 @@ class ApiPostController extends Controller
      *        @OA\Property(
      *          property="message",
      *          type="string",
-     *          example="The Specified post has been retrieved successfully"
+     *          example="The Specified comment has been retrieved successfully"
      *        ),
      *      )
      *    ),
      *    @OA\Response(
      *      response=404,
-     *      description="post not found"
+     *      description="comment not found"
      *    )
      *  )
      */
-    public function show(Post $post)
+    public function show(Comment $comment)
     {
-        if ($post) {
-            return response()->json(['message' => 'The Specified post has been retrieved successfully', 'post' => $post]);
-        }
-        return response()->json(['message' => 'post not found', 404]);
+        // $matchThese = [
+        //     'id' => $id,
+        //     'user_id' => auth()->guard('api')->id()
+        // ];
+        // $comment = Comment::where($matchThese)->get();
+        $comment = Comment::find($comment)->where('user_id', auth()->guard('api')->id())->first();
+        if ($comment)
+            return response()->json(['message' => 'The Specified comment has been retrieved successfully', 'comment' => $comment]);
+        return response()->json(['message' => 'comment not found', 404]);
     }
 
     /**
      * Update the specified resource in storage.
      * 
-     *  * @OA\Patch(
-     *     path="/api/user/posts/{id}",
-     *     summary="Update a post",
-     *     tags={"posts"},
+     * * @OA\Patch(
+     *     path="/api/user/comments/{id}",
+     *     summary="Update a comment",
+     *     tags={"comments"},
      *     @OA\Parameter(
      *         name="id",
      *         in="path",
-     *         description="ID of the post to update",
+     *         description="ID of the comment to update",
      *         required=true,
      *         @OA\Schema(type="integer")
      *     ),
      *     @OA\RequestBody(
      *         required=true,
      *         @OA\JsonContent(
-     *             required={"bio"},
-     *             @OA\Property(property="bio", type="string", example="This is a sample bio")
+     *             required={"content"},
+     *             @OA\Property(property="content", type="string", example="This is a sample content")
+     *         )
+     *     ),
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"post_id"},
+     *             @OA\Property(property="post_id", type="string", example=1)
      *         )
      *     ),
      *     @OA\Response(
      *         response=200,
-     *         description="post updated successfully",
+     *         description="comment updated successfully",
      *         @OA\JsonContent(
-     *             @OA\Property(property="message", type="string", example="The Specified post has been updated successfully"),
+     *             @OA\Property(property="message", type="string", example="The Specified comment has been updated successfully"),
      *             @OA\Property(
-     *                 property="post",
+     *                 property="comment",
      *                 type="object",
      *                 @OA\Property(property="id", type="integer", example=1),
-     *                 @OA\Property(property="bio", type="string", example="This is a sample bio"),
+     *                 @OA\Property(property="content", type="string", example="This is a sample content"),
      *                 @OA\Property(property="created_at", type="string", format="date-time", example="2023-01-01T00:00:00Z"),
      *                 @OA\Property(property="updated_at", type="string", format="date-time", example="2023-01-01T00:00:00Z")
      *             )
@@ -188,9 +204,9 @@ class ApiPostController extends Controller
      *     ),
      *     @OA\Response(
      *         response=404,
-     *         description="post not found",
+     *         description="comment not found",
      *         @OA\JsonContent(
-     *             @OA\Property(property="message", type="string", example="post not found")
+     *             @OA\Property(property="message", type="string", example="comment not found")
      *         )
      *     ),
      *     @OA\Response(
@@ -211,33 +227,36 @@ class ApiPostController extends Controller
      *     )
      * )
      */
-    public function update(Request $request, Post $post)
+    public function update(Request $request, Comment $comment)
     {
-        Gate::authorize('update', $post);
-        $validatedData = $request->validate([
+
+        $request->validate([
             'content' => 'string',
+            'post_id' => ['required', 'exists:posts,id'],
         ]);
 
-        if ($post) {
-            $post->update($validatedData);
-            return response()->json(['message' => 'The Specified post has been updated successfully', 'post' => $post]);
+        if ($comment) {
+            $comment->update([
+                'content' => $request->content
+            ]);
+            return response()->json(['message' => 'The Specified comment has been updated successfully', 'comment' => $comment]);
         }
-        return response()->json(['message' => 'post not found', 404]);
+        return response()->json(['message' => 'comment not found', 404]);
     }
 
     /**
      * Remove the specified resource from storage.
      * 
      * * @OA\Delete(
-     *     path="/api/user/posts/{id}",
-     *     summary="Delete a user post",
-     *     description="Deletes the specified user post by ID",
-     *     operationId="destroyUserpost",
-     *     tags={"posts"},
+     *     path="/api/user/comments/{id}",
+     *     summary="Delete a user comment",
+     *     description="Deletes the specified user comment by ID",
+     *     operationId="destroyUsercomment",
+     *     tags={"comments"},
      *     @OA\Parameter(
      *         name="id",
      *         in="path",
-     *         description="ID of the user post to delete",
+     *         description="ID of the user comment to delete",
      *         required=true,
      *         @OA\Schema(
      *             type="string"
@@ -245,33 +264,31 @@ class ApiPostController extends Controller
      *     ),
      *     @OA\Response(
      *         response=204,
-     *         description="The specified post has been deleted successfully",
+     *         description="The specified comment has been deleted successfully",
      *         @OA\JsonContent(
      *             @OA\Property(
      *                 property="message",
      *                 type="string",
-     *                 example="The specified post has been deleted successfully"
+     *                 example="The specified comment has been deleted successfully"
      *             )
      *         )
      *     ),
      *     @OA\Response(
      *         response=404,
-     *         description="post not found",
+     *         description="comment not found",
      *         @OA\JsonContent(
      *             @OA\Property(
      *                 property="message",
      *                 type="string",
-     *                 example="post not found"
+     *                 example="comment not found"
      *             )
      *         )
      *     )
      * )
      */
-    public function destroy(Post $post)
+    public function destroy(Comment $comment)
     {
-        Gate::authorize('delete', $post);
-
-        $post->delete();
-        return response()->json(['message' => 'The Specified post has been deleted successfully', 204]);
+        $comment->delete();
+        return response()->json(['message' => 'The Specified comment has been deleted successfully', 204]);
     }
 }

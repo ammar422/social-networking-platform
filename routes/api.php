@@ -2,9 +2,9 @@
 
 use App\Http\Controllers\Api\Auth\LoginController;
 use App\Http\Controllers\Api\Auth\registerController;
+use App\Http\Controllers\Api\Posts\ApiCommentController;
 use App\Http\Controllers\Api\Posts\ApiPostController;
 use App\Http\Controllers\Api\Profiles\ApiProfileController;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 // Route::get('/user', function (Request $request) {
@@ -19,5 +19,6 @@ Route::middleware('auth:api')->group(function () {
     route::prefix('user')->group(function () {
         route::apiResource('profile', ApiProfileController::class);
         route::apiResource('post', ApiPostController::class);
+        route::apiResource('comment', ApiCommentController::class);
     });
 });
