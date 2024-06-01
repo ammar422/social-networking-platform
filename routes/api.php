@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\Auth\LoginController;
 use App\Http\Controllers\Api\Auth\registerController;
 use App\Http\Controllers\Api\Posts\ApiCommentController;
+use App\Http\Controllers\Api\Posts\ApiLikeController;
 use App\Http\Controllers\Api\Posts\ApiPostController;
 use App\Http\Controllers\Api\Profiles\ApiProfileController;
 use Illuminate\Support\Facades\Route;
@@ -20,5 +21,6 @@ Route::middleware('auth:api')->group(function () {
         route::apiResource('profile', ApiProfileController::class);
         route::apiResource('post', ApiPostController::class);
         route::apiResource('comment', ApiCommentController::class);
+        route::apiResource('like', ApiLikeController::class);
     });
 });
